@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG to PNG Converter</title>
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7231494775510064"
+     crossorigin="anonymous"></script>
+   <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    header {
+        width: 100%;
+        background-color: #007bff;
+        color: #ffffff;
+        padding: 20px 0;
+        text-align: center;
+        font-size: 24px;
+    }
+    .content-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 20px;
+        max-width: 1200px;
+        width: 100%;
+        padding: 20px;
+    }
+    .ad-section {
+        flex-basis: 20%; /* Adjust the width of the ad sections */
+        border: 1px solid #ccc;
+        padding: 10px;
+        min-height: 600px; /* Adjust based on your ad size */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f4f4f4; /* Placeholder styling */
+    }
+    main {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+		padding:40px;
+    }
+    textarea, button, img {
+        width: 100%;
+        max-width: 500px; /* Adjust based on your preference */
+        margin-top: 10px;
+    }
+    textarea {
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        resize: vertical;
+    }
+    button {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+    img {
+        border: 1px solid #000;
+    }
+
+    /* Media Query for screens smaller than 768px */
+    @media (max-width: 768px) {
+        .content-container {
+            flex-direction: column;
+            align-items: center;
+        }
+        .ad-section {
+            flex-basis: auto; /* Allow ad sections to take full width */
+            width: 100%; /* Make ads full width on smaller screens */
+            order: 3; /* Ensure ads are placed below the main content */
+        }
+        main {
+            order: 2;
+        }
+    }
+</style>
+
+</head>
+<body>
+
+<header>SVG to PNG Converter</header>
+
+<div class="content-container">
+    <div class="ad-section"></div>
+    
+    <main>
+        <!-- Your existing form and script here -->
+        <label>Enter SVG to convert to PNG:</label><br>
+        <textarea id="svgData" rows="10" cols="50"></textarea><br>
+        <label>Enter SVG styles (optional):</label><br>
+        <textarea id="svgStyles" rows="5" cols="50"></textarea><br>
+        <button id="convertBtn">Convert to PNG</button>
+        <br>
+        <img id="pngImage" alt="Converted PNG image" style="display: none; margin: auto;"/>
+    </main>
+    
+    <div class="ad-section"></div>
+</div>
+
+<script>
+document.getElementById("convertBtn").addEventListener("click", function() {
+    let svgData = document.getElementById("svgData").value;
+    const svgStyles = document.getElementById("svgStyles").value.trim();
+
+    if (!svgData.trim()) {
+        alert("Please enter SVG data.");
+        return;
+    }
+
+    if (svgStyles) {
+        svgData = svgData.replace('</svg>', `<style>${svgStyles}</style></svg>`);
+    }
+    
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+
+    const viewBoxMatch = svgData.match(/viewBox="([^"]+)"/);
+    let width, height;
+    if (viewBoxMatch && viewBoxMatch[1]) {
+        const viewBoxValues = viewBoxMatch[1].split(/\s+|,/);
+        width = viewBoxValues[2];
+        height = viewBoxValues[3];
+    }
+
+    img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
+    
+    img.onload = function() {
+        canvas.width = width || img.width;
+        canvas.height = height || img.height;
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
+        const pngImage = document.getElementById("pngImage");
+        pngImage.src = canvas.toDataURL("image/png");
+		pngImage.style.display = 'block';
+    };
+    
+    img.onerror = function() {
+        alert("Error loading SVG data. Please ensure your SVG data is correct.");
+    };
+});
+</script>
+
+</body>
+</html>
